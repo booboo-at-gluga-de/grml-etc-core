@@ -1896,6 +1896,8 @@ grml_vcs_plain_formats=(
     actionformat "(%s%)-[%b%m|%a] " "zsh: %r"
     rev-branchformat "%b:%r"
     added_append_string "|C"
+    deleted_append_string "|D"
+    renamed_append_string "|R"
     modified_append_string "|!!"
     untracked_append_string "|U"
     stashlength_append_string "|S"
@@ -1908,6 +1910,8 @@ grml_vcs_coloured_formats=(
     actionformat "${MAGENTA}(${NO_COLOR}%s${MAGENTA})${YELLOW}-${MAGENTA}[${GREEN}%b%m${YELLOW}|${RED}%a${MAGENTA}]${NO_COLOR} "
     rev-branchformat "%b${RED}:${YELLOW}%r"
     added_append_string "${YELLOW}|${RED}C${NO_COLOR}"
+    deleted_append_string "${YELLOW}|${RED}D${NO_COLOR}"
+    renamed_append_string "${YELLOW}|${RED}R${NO_COLOR}"
     modified_append_string "${YELLOW}|${RED}!!${NO_COLOR}"
     untracked_append_string "${YELLOW}|${RED}U"
     stashlength_append_string "${YELLOW}|${RED}S"
@@ -1936,6 +1940,8 @@ function grml_vcs_info_set_formats () {
         F=${grml_vcs_coloured_formats[format]}
         BF=${grml_vcs_coloured_formats[rev-branchformat]}
         ADDED_APPEND_STRING=${grml_vcs_coloured_formats[added_append_string]}
+        DELETED_APPEND_STRING=${grml_vcs_coloured_formats[deleted_append_string]}
+        RENAMED_APPEND_STRING=${grml_vcs_coloured_formats[renamed_append_string]}
         MODIFIED_APPEND_STRING=${grml_vcs_coloured_formats[modified_append_string]}
         UNTRACKED_APPEND_STRING=${grml_vcs_coloured_formats[untracked_append_string]}
         STASHLENGTH_APPEND_STRING=${grml_vcs_coloured_formats[stashlength_append_string]}
@@ -1947,6 +1953,8 @@ function grml_vcs_info_set_formats () {
         F=${grml_vcs_plain_formats[format]}
         BF=${grml_vcs_plain_formats[rev-branchformat]}
         ADDED_APPEND_STRING=${grml_vcs_plain_formats[added_append_string]}
+        DELETED_APPEND_STRING=${grml_vcs_plain_formats[deleted_append_string]}
+        RENAMED_APPEND_STRING=${grml_vcs_plain_formats[renamed_append_string]}
         MODIFIED_APPEND_STRING=${grml_vcs_plain_formats[modified_append_string]}
         UNTRACKED_APPEND_STRING=${grml_vcs_plain_formats[untracked_append_string]}
         STASHLENGTH_APPEND_STRING=${grml_vcs_plain_formats[stashlength_append_string]}
@@ -1984,6 +1992,8 @@ function +vi-git_more_info() {
     GRML_VCS_TIMEOUT=${GRML_VCS_TIMEOUT:-2}
 
     local ADDED_APPEND=""
+    local DELETED_APPEND=""
+    local RENAMED_APPEND=""
     local MODIFIED_APPEND=""
     local UNTRACKED_APPEND=""
     local STASHLENGTH_APPEND=""
@@ -2002,6 +2012,16 @@ function +vi-git_more_info() {
         echo $GIT_STATUS | grep "new file:" > /dev/null
         if [[ $? -eq 0 ]]; then
             ADDED_APPEND=${ADDED_APPEND_STRING}
+        fi
+
+        echo $GIT_STATUS | grep "deleted:" > /dev/null
+        if [[ $? -eq 0 ]]; then
+            DELETED_APPEND=${DELETED_APPEND_STRING}
+        fi
+
+        echo $GIT_STATUS | grep "renamed:" > /dev/null
+        if [[ $? -eq 0 ]]; then
+            RENAMED_APPEND=${RENAMED_APPEND_STRING}
         fi
 
         echo $GIT_STATUS | grep "modified:" > /dev/null
@@ -2024,12 +2044,16 @@ function +vi-git_more_info() {
             COMMITS_TO_PUSH=$MATCH
             COMMITS_TO_PUSH=${COMMITS_TO_PUSH:s/ by /}
             COMMITS_TO_PUSH=${COMMITS_TO_PUSH:s/ commit/}
-        fi
-        if [[ $COMMITS_TO_PUSH -gt 0 ]]; then
-            PUSH_PENDING_APPEND="${PUSH_PENDING_APPEND_STRING}${COMMITS_TO_PUSH}"
+
+            if [[ $COMMITS_TO_PUSH -gt 0 ]]; then
+                PUSH_PENDING_APPEND="${PUSH_PENDING_APPEND_STRING}${COMMITS_TO_PUSH}"
+            fi
+        elif [[ $(echo $GIT_STATUS | egrep "Your branch is based on .* but the upstream is gone." 2>/dev/null | wc -l) -gt 0 ]]; then
+            # before pushing the branch for the first time
+            PUSH_PENDING_APPEND="${PUSH_PENDING_APPEND_STRING}"
         fi
 
-        hook_com[misc]="${ADDED_APPEND}${MODIFIED_APPEND}${UNTRACKED_APPEND}${STASHLENGTH_APPEND}${PUSH_PENDING_APPEND}"
+        hook_com[misc]="${ADDED_APPEND}${DELETED_APPEND}${RENAMED_APPEND}${MODIFIED_APPEND}${UNTRACKED_APPEND}${STASHLENGTH_APPEND}${PUSH_PENDING_APPEND}"
     fi
     return 0
 }
