@@ -1888,6 +1888,36 @@ if zrcautoload vcs_info; then
     fi
 fi
 
+# extended VCS infos in your prompt:
+# if you want to customize the markers in the prompt
+# please put something like this into your .zshrc.pre
+# GRML_VCS_UNTRACKED_MARKER='☂'
+# GRML_VCS_PUSH_MARKER='↑'
+
+# complete list of variables you can set and their meaning:
+# (default values see below)
+# GRML_VCS_ADDED_MARKER       # files have been added (but not yet committed)
+# GRML_VCS_DELETED_MARKER     # files have been deleted (but not yet committed)
+# GRML_VCS_RENAMED_MARKER     # files have been renamed (but not yet committed)
+# GRML_VCS_MODIFIED_MARKER    # files have been modified (but not yet committed)
+# GRML_VCS_UNTRACKED_MARKER   # there are untracked files (not yet added)
+# GRML_VCS_STASHED_MARKER     # you have stashed changes
+# GRML_VCS_PUSH_MARKER        # there are commits that not yet have been pushed upstream
+# GRML_VCS_UNKNOWN_MARKER     # the "git status" command has been aborted because of a timeout
+                              # if you see this on in your prompt you maybe you want
+                              # to increase GRML_VCS_TIMEOUT
+                              # or you might want to switch extended status info off by setting
+                              # GRML_EXTENDED_VCS_INFO=0
+
+GRML_VCS_ADDED_MARKER=${GRML_VCS_ADDED_MARKER:-C}
+GRML_VCS_DELETED_MARKER=${GRML_VCS_DELETED_MARKER:-D}
+GRML_VCS_RENAMED_MARKER=${GRML_VCS_RENAMED_MARKER:-R}
+GRML_VCS_MODIFIED_MARKER=${GRML_VCS_MODIFIED_MARKER:-M}
+GRML_VCS_UNTRACKED_MARKER=${GRML_VCS_UNTRACKED_MARKER:-U}
+GRML_VCS_STASHED_MARKER=${GRML_VCS_STASHED_MARKER:-S}
+GRML_VCS_PUSH_MARKER=${GRML_VCS_PUSH_MARKER:-P}
+GRML_VCS_UNKNOWN_MARKER=${GRML_VCS_UNKNOWN_MARKER:-?}
+
 typeset -A grml_vcs_coloured_formats
 typeset -A grml_vcs_plain_formats
 
@@ -1895,28 +1925,28 @@ grml_vcs_plain_formats=(
     format "(%s%)-[%b%m] "    "zsh: %r"
     actionformat "(%s%)-[%b%m|%a] " "zsh: %r"
     rev-branchformat "%b:%r"
-    added_append_string "|C"
-    deleted_append_string "|D"
-    renamed_append_string "|R"
-    modified_append_string "|!!"
-    untracked_append_string "|U"
-    stashlength_append_string "|S"
-    push_pending_append_string "|P"
-    unknown_append_string "|?"
+    added_append_string "|${GRML_VCS_ADDED_MARKER}"
+    deleted_append_string "|${GRML_VCS_DELETED_MARKER}"
+    renamed_append_string "|${GRML_VCS_RENAMED_MARKER}"
+    modified_append_string "|${GRML_VCS_MODIFIED_MARKER}"
+    untracked_append_string "|${GRML_VCS_UNTRACKED_MARKER}"
+    stashlength_append_string "|${GRML_VCS_STASHED_MARKER}"
+    push_pending_append_string "|${GRML_VCS_PUSH_MARKER}"
+    unknown_append_string "|${GRML_VCS_UNKNOWN_MARKER}"
 )
 
 grml_vcs_coloured_formats=(
     format "${MAGENTA}(${NO_COLOR}%s${MAGENTA})${YELLOW}-${MAGENTA}[${GREEN}%b%m${MAGENTA}]${NO_COLOR} "
     actionformat "${MAGENTA}(${NO_COLOR}%s${MAGENTA})${YELLOW}-${MAGENTA}[${GREEN}%b%m${YELLOW}|${RED}%a${MAGENTA}]${NO_COLOR} "
     rev-branchformat "%b${RED}:${YELLOW}%r"
-    added_append_string "${YELLOW}|${RED}C${NO_COLOR}"
-    deleted_append_string "${YELLOW}|${RED}D${NO_COLOR}"
-    renamed_append_string "${YELLOW}|${RED}R${NO_COLOR}"
-    modified_append_string "${YELLOW}|${RED}!!${NO_COLOR}"
-    untracked_append_string "${YELLOW}|${RED}U"
-    stashlength_append_string "${YELLOW}|${RED}S"
-    push_pending_append_string "${YELLOW}|${RED}P"
-    unknown_append_string "${YELLOW}|${RED}?${NO_COLOR}"
+    added_append_string "${YELLOW}|${RED}${GRML_VCS_ADDED_MARKER}${NO_COLOR}"
+    deleted_append_string "${YELLOW}|${RED}${GRML_VCS_DELETED_MARKER}${NO_COLOR}"
+    renamed_append_string "${YELLOW}|${RED}${GRML_VCS_RENAMED_MARKER}${NO_COLOR}"
+    modified_append_string "${YELLOW}|${RED}${GRML_VCS_MODIFIED_MARKER}${NO_COLOR}"
+    untracked_append_string "${YELLOW}|${RED}${GRML_VCS_UNTRACKED_MARKER}"
+    stashlength_append_string "${YELLOW}|${RED}${GRML_VCS_STASHED_MARKER}"
+    push_pending_append_string "${YELLOW}|${RED}${GRML_VCS_PUSH_MARKER}"
+    unknown_append_string "${YELLOW}|${RED}${GRML_VCS_UNKNOWN_MARKER}${NO_COLOR}"
 )
 
 typeset GRML_VCS_COLOUR_MODE=xxx
