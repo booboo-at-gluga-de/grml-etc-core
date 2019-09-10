@@ -1891,8 +1891,13 @@ fi
 # extended VCS infos in your prompt:
 # if you want to customize the markers in the prompt
 # please put something like this into your .zshrc.pre
-# GRML_VCS_UNTRACKED_MARKER='☂'
-# GRML_VCS_PUSH_MARKER='↑'
+# GRML_VCS_ADDED_MARKER='✅'
+# GRML_VCS_DELETED_MARKER='❌'
+# GRML_VCS_RENAMED_MARKER='↔'
+# GRML_VCS_MODIFIED_MARKER='≠'
+# GRML_VCS_UNTRACKED_MARKER='⛱'
+# GRML_VCS_STASHED_MARKER='⎆'
+# GRML_VCS_PUSH_MARKER='⇧'
 
 # complete list of variables you can set and their meaning:
 # (default values see below)
